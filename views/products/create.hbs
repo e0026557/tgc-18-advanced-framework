@@ -1,0 +1,12 @@
+{{#extends 'base'}}
+
+{{#block 'content'}}
+
+<form method="post">
+  {{!-- IMPORTANT: TRIPLE BRACES! --}}
+  {{{form}}}
+  <input type="submit" value="Submit" class="btn btn-primary my-3">
+</form>
+
+{{/block}}
+{{/extends}}
