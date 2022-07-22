@@ -52,6 +52,9 @@ router.post('/create', async function (req, res) {
     },
     'empty': function (form) {
       // the empty function is called if the form is not filled in at all
+      res.render('products/create', {
+        form: form.toHTML(bootstrapField)
+      })
     }
   })
 })
