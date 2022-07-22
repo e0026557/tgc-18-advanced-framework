@@ -13,16 +13,16 @@ const bootstrapField = function (name, object) {
       object.widget.classes.push('form-control');
   }
 
-  var validationclass = object.value && !object.error ? 'is-valid' : '';
+  let validationclass = object.value && !object.error ? 'is-valid' : '';
   validationclass = object.error ? 'is-invalid' : validationclass;
   if (validationclass) {
       object.widget.classes.push(validationclass);
   }
 
-  var label = object.labelHTML(name);
-  var error = object.error ? '<div class="invalid-feedback">' + object.error + '</div>' : '';
+  const label = object.labelHTML(name);
+  const error = object.error ? '<div class="invalid-feedback">' + object.error + '</div>' : '';
 
-  var widget = object.widget.toHTML(name, object);
+  const widget = object.widget.toHTML(name, object);
   return '<div class="form-group">' + label + widget + error + '</div>';
 };
 
