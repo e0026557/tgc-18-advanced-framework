@@ -8,6 +8,9 @@ const Product = bookshelf.model('Product', {
   // the name must match the model name, but singular and always lowercase
   category: function () {
     return this.belongsTo('Category');
+  },
+  tags: function () {
+    return this.belongsToMany('Tag');
   }
 })
 
@@ -19,4 +22,13 @@ const Category = bookshelf.model('Category', {
   }
 })
 
-module.exports = { Product, Category };
+const Tag = bookshelf.model('Tag', {
+  tableName: 'tags',
+  // relationship name
+  products: function () {
+    // the first arg of belongsToMany must be a model name
+    return this.belongsToMany('Product')
+  }
+})
+
+module.exports = { Product, Category, Tag };

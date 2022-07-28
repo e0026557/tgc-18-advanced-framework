@@ -11,13 +11,13 @@ const bootstrapField = function (name, object) {
   if (!Array.isArray(object.widget.classes)) { object.widget.classes = []; }
 
   if (object.widget.classes.indexOf('form-control') === -1) {
-      object.widget.classes.push('form-control');
+    object.widget.classes.push('form-control');
   }
 
   var validationclass = object.value && !object.error ? 'is-valid' : '';
   validationclass = object.error ? 'is-invalid' : validationclass;
   if (validationclass) {
-      object.widget.classes.push(validationclass);
+    object.widget.classes.push(validationclass);
   }
 
   var label = object.labelHTML(name);
@@ -28,31 +28,37 @@ const bootstrapField = function (name, object) {
 };
 
 // This function will return an instance of the create product form
-const createProductForm = (categories) => {
+const createProductForm = (categories, tags) => {
   // each key/value pair in the object represents one form control
   return forms.create({
-      'name': fields.string({
-          required: true,
-          errorAfterField: true,
-      }),
-      'cost': fields.string({
-          required: true,
-          errorAfterField: true,
-          validators: [validators.integer(), validators.min(0)]
-      }),
-      'description': fields.string({
-          required: true,
-          errorAfterField: true
-      }),
-      'category_id': fields.string({
-        label: 'Category',
-        required: true,
-        errorAfterField: true,
-        // array of array, where the inner array represents an option [value, display value shown to users]
-        choices: categories,
-        widget: widgets.select()
-      })
+    'name': fields.string({
+      required: true,
+      errorAfterField: true,
+    }),
+    'cost': fields.string({
+      required: true,
+      errorAfterField: true,
+      validators: [validators.integer(), validators.min(0)]
+    }),
+    'description': fields.string({
+      required: true,
+      errorAfterField: true
+    }),
+    'category_id': fields.string({
+      label: 'Category',
+      required: true,
+      errorAfterField: true,
+      // array of array, where the inner array represents an option [value, display value shown to users]
+      choices: categories,
+      widget: widgets.select()
+    }),
+    'tags': fields.string({
+      required: true,
+      errorAfterField: true,
+      widget: widgets.multipleSelect(),
+      choices: tags
+    })
   })
 }
 
-module.exports = { createProductForm, bootstrapField};
+module.exports = { createProductForm, bootstrapField };
