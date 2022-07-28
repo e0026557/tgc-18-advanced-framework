@@ -96,13 +96,13 @@ router.post('/create', async function (req, res) {
 //   })
 // })
 
-router.get('/:product_id/update', async function(req,res){
+router.get('/:product_id/update', async function (req, res) {
   // 1. get the product that is being updated
   // select * from products where product_id = <req.params.product_id>
   const product = await Product.where({
-      'id': req.params.product_id
+    'id': req.params.product_id
   }).fetch({
-      require: true  // if not found will cause an exception (aka an error)
+    require: true  // if not found will cause an exception (aka an error)
   })
   // 2. create the form to update the product
   // Fetch all the categories in the system
@@ -116,10 +116,11 @@ router.get('/:product_id/update', async function(req,res){
   productForm.fields.name.value = product.get('name');
   productForm.fields.cost.value = product.get('cost');
   productForm.fields.description.value = product.get('description');
+  productForm.fields.category_id.value = product.get('category_id');
 
-  res.render('products/update',{
-      'form':productForm.toHTML(bootstrapField),
-      'product': product.toJSON()
+  res.render('products/update', {
+    'form': productForm.toHTML(bootstrapField),
+    'product': product.toJSON()
 
   })
 })
@@ -149,6 +150,7 @@ router.post('/:product_id/update', async function (req, res) {
       // product.set('name', form.data.name)
       // product.set('cost', form.data.cost)
       // product.set('description', form.data.description)
+      // product.set('category_id', form.data.category_id)
       product.set(form.data); // for the shortcut to work, all the keys in form.data object must be a column name in the table
       await product.save();
       res.redirect('/products');
