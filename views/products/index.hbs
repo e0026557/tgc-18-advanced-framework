@@ -1,27 +1,33 @@
 {{#extends 'base'}}
 
 {{#block 'content'}}
-
-  <table class="table">
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th>Description</th>
-        <th>Cost</th>
-        <th></th>
-      </tr>
-    </thead>
-    <tbody>
-      {{#each products}}
-        <tr>
-          <td>{{this.name}}</td>
-          <td>{{this.description}}</td>
-          <td>{{this.cost}}</td>
-          <td></td>
-        </tr>
-      {{/each}}
-    </tbody>
-  </table>
+<h1>Products</h1>
+<a href="products/create" class="btn btn-primary">New</a>
+<table class="table">
+  <thead>
+    <tr>
+      <th>Name</th>
+      <th>Description</th>
+      <th>Cost</th>
+      <th>Category</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    {{#each products}}
+    <tr>
+      <td>{{this.name}}</td>
+      <td>{{this.description}}</td>
+      <td>{{divide this.cost 100}}</td>
+      <td>{{this.category.name}}</td>
+      <td>
+        <a href="products/{{this.id}}/update" class="btn btn-sm btn-primary">Update</a>
+        <a href="products/{{this.id}}/delete" class="btn btn-sm btn-danger">Delete</a>
+      </td>
+    </tr>
+    {{/each}}
+  </tbody>
+</table>
 
 {{/block}}
 
