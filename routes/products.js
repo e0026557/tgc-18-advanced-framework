@@ -175,7 +175,7 @@ router.get('/:product_id/delete', async function (req, res) {
     require: true
   })
 
-  res.render('/products/delete', {
+  res.render('products/delete', {
     product: product.toJSON()
   })
 })
