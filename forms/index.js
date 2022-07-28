@@ -1,6 +1,5 @@
 // Require in caolan-forms
 const forms = require('forms');
-const { widgets } = require('forms/lib/forms');
 
 // Create some shortcuts
 const fields = forms.fields;
