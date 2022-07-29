@@ -69,6 +69,8 @@ router.post('/create', async function (req, res) {
         await product.tags().attach(form.data.tags.split(','))
       }
 
+      // req.flash is available because we did app.use(flash()) inside index.js
+      req.flash('success_messages', `New product ${product.get('name')} has been created`)
       res.redirect('/products')
     },
     'error': function (form) {
@@ -153,7 +155,7 @@ router.post('/:product_id/update', async function (req, res) {
   const product = await Product.where({
     'id': req.params.product_id
   }).fetch({
-    withRelated:['tags'],
+    withRelated: ['tags'],
     require: true // if not found will cause an exception/error (need to surround with try catch in real life)
   })
 
@@ -185,7 +187,7 @@ router.post('/:product_id/update', async function (req, res) {
 
       // More efficient way
       // remove all the current tags that are not selected anymore
-      let toRemove = existingTagIds.filter( id => tagIds.includes(id) === false)
+      let toRemove = existingTagIds.filter(id => tagIds.includes(id) === false)
 
       await product.tags().detach(toRemove);
 
