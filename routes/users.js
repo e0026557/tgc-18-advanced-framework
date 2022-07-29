@@ -1,5 +1,6 @@
 const express = require('express');
 const { createUserForm, bootstrapField, createLoginForm } = require('../forms');
+const { checkIfAuthenticated } = require('../middlewares');
 const { User } = require('../models');
 const router = express.Router();
 
@@ -48,6 +49,57 @@ router.get('/login', async function (req, res) {
   res.render('users/login', {
     form: loginForm.toHTML(bootstrapField)
   })
+})
+
+router.post('/login', checkIfAuthenticated, async function (req, res) {
+  const loginForm = createLoginForm();
+  loginForm.handle({
+    success: async function (form) {
+      const user = await User.where({
+        email: form.data.email,
+        password: form.data.password
+      }).fetch({
+        require: false // Because we want to handle the case where no user is found by ourselves
+      })
+
+      // Check if the user exists
+      if (!user) {
+        req.flash('error_messages', 'Invalid credentials');
+        res.redirect('/users/login')
+      }
+      else {
+        // Save the user data in the session file
+        req.session.user = {
+          id: user.get('id'),
+          email: user.get('email'),
+          username: user.get('username')
+        };
+
+        res.flash('success_messages', `Welcome back, ${user.get('username')}`);
+        res.redirect('/users/profile')
+      }
+    }
+  })
+})
+
+router.get('/profile', checkIfAuthenticated, async function (req, res) {
+  const user = req.session.user;
+  if (!user) {
+    req.flash('error_messages', 'Only logged in users can access this page');
+    res.redirect('/users/login');
+  }
+  else {
+    res.render('users/profile', {
+      user
+    })
+  }
+})
+
+router.get('/logout', function (req, res) {
+  // Remove the user object in the session
+  req.session.user = null;
+  req.flash('success_messages', 'You have been logged out');
+  res.redirect('/users/login');
 })
 
 module.exports = router;
