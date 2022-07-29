@@ -5,8 +5,66 @@
 <form method="post">
   {{!-- IMPORTANT: TRIPLE BRACES! --}}
   {{{form}}}
+
+  <div>
+    <a href="#" class="btn btn-primary" id="upload_widget">Upload</a>
+    <img src="" style="display:none" id="uploaded_image">
+  </div>
+  <input type="hidden" name="_csrf" value="{{csrfToken}}" />
   <input type="submit" value="Submit" class="btn btn-primary my-3">
 </form>
 
 {{/block}}
+
+{{#block 'js'}}
+
+{{!-- Axios --}}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.27.2/axios.min.js"
+  integrity="sha512-odNmoc1XJy5x1TMVMdC7EMs3IVdItLPlCeL5vSUPN2llYKMJ2eByTTAIiiuqLg+GdNr9hF6z81p27DArRFKT7A=="
+  crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+
+{{!-- Cloudinary --}}
+<script src="https://widget.cloudinary.com/v2.0/global/all.js" type="text/javascript"></script>
+
+{{!-- Get signature --}}
+<script>
+  function generateSignature(callback, params_to_sign) {
+    // Pass the parameter to sign to the cloudinary route in the query string
+    axios.get('/cloudinary/sign', {
+      params: {
+        params_to_sign: params_to_sign
+      }
+    }).then(function (response) {
+      // callback is given by cloudinary
+      callback(response.data);
+    })
+  }
+</script>
+
+{{!-- Display the widget --}}
+<script>
+  const myWidget = cloudinary.createUploadWidget({
+    cloudName: "{{cloudinaryName}}",
+    apiKey: "{{cloudinaryApiKey}}",
+    uploadPreset: "{{cloudinaryPreset}}",
+    uploadSignature: generateSignature
+  }, function(error, result) {
+    if (!error && result.event == 'success') {
+      console.log(result);
+      // caolan form id
+      document.querySelector('#id_image_url').value = result.info.url;
+      document.querySelector('#uploaded_image').src = result.info.url;
+      document.querySelector('#uploaded_image').style.display = 'block';
+    }
+  })
+
+  // Add event listener to the upload button
+  document.querySelector('#upload_widget').addEventListener('click', function(event) {
+    event.preventDefault();
+    myWidget.open();
+  })
+</script>
+
+{{/block}}
+
 {{/extends}}

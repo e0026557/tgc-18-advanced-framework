@@ -12,6 +12,8 @@
       crossorigin="anonymous"
     />
 
+    {{#block 'css'}}{{/block}}
+
     <title>Hello, world!</title>
   </head>
   <body>
@@ -32,9 +34,11 @@
           </div>
         {{/each}}
       {{/if}}
-      
+
       {{#block "content"}}{{/block}}
     </div>
+
+    {{#block 'js'}}{{/block}}
 
   </body>
 </html>

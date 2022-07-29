@@ -8,6 +8,9 @@ const session = require('express-session');
 const flash = require('connect-flash');
 const csrf = require('csurf');
 
+// Enable env files
+require('dotenv').config();
+
 // Create a new session filestore
 const FileStore = require('session-file-store')(session);
 
@@ -54,6 +57,7 @@ app.use(function(req, res, next) {
 const landingRoutes = require("./routes/landing");
 const productRoutes = require("./routes/products");
 const userRoutes = require('./routes/users');
+const cloudinaryRoutes = require('./routes/cloudinary')
 const { urlencoded } = require("express");
 
 // First arg is the prefix used to access the routes in the router function
@@ -61,6 +65,7 @@ const { urlencoded } = require("express");
 app.use("/", landingRoutes);
 app.use("/products", productRoutes);
 app.use('/users', userRoutes);
+app.use('/cloudinary', cloudinaryRoutes);
 
 app.listen(3000, function () {
   console.log("Server has started");
