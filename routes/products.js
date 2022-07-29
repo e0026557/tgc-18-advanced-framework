@@ -92,28 +92,6 @@ router.post('/create', async function (req, res) {
   })
 })
 
-// router.get('/:product_id/update', async function (req, res) {
-//   // 1. Get the product that is being updated
-//   // -> SELECT * FROM products WHERE product_id = <req.params.product_id> 
-//   const product = await Product.where({
-//     'id': req.params.product_id
-//   }).fetch({
-//     require: true // if not found will cause an exception/error (need to surround with try catch in real life)
-//   })
-
-//   // 2. Create the form to update the product
-//   const productForm = createProductForm();
-//   // 3. Fill the form with the previous values of the product
-//   productForm.fields.name.value = product.get('name');
-//   productForm.fields.cost.value = product.get('cost');
-//   productForm.fields.description = product.get('description');
-
-//   res.render('products/update', {
-//     form: productForm.toHTML(bootstrapField),
-//     product: product.toJSON()
-//   })
-// })
-
 router.get('/:product_id/update', async function (req, res) {
   // 1. get the product that is being updated
   // select * from products where product_id = <req.params.product_id>

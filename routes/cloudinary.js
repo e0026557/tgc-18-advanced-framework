@@ -2,7 +2,6 @@ const express = require('express');
 const router = express.Router();
 
 const cloudinary = require('cloudinary');
-const { route } = require('./landing');
 
 // Configure cloudinary
 cloudinary.config({
@@ -23,3 +22,5 @@ router.get('/sign', async function(req, res) {
   // Send back signature to cloudinary widget
   res.send(signature);
 })
+
+module.exports = router;

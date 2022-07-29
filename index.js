@@ -46,9 +46,12 @@ app.use(function (req, res, next) {
 
 //  Enable CSRF protection
 app.use(csrf());
-app.use(express.urlencoded());
+app.use(express.urlencoded({
+  extended: false
+}))
 
-app.use(function(req, res, next) {
+// Share CSRF with hbs files
+app.use(function(req,res,next){
   // The csrfToken function is available because of app.use(csrf())
   res.locals.csrfToken = req.csrfToken();
   next();
@@ -57,8 +60,7 @@ app.use(function(req, res, next) {
 const landingRoutes = require("./routes/landing");
 const productRoutes = require("./routes/products");
 const userRoutes = require('./routes/users');
-const cloudinaryRoutes = require('./routes/cloudinary')
-const { urlencoded } = require("express");
+const cloudinaryRoutes = require('./routes/cloudinary');
 
 // First arg is the prefix used to access the routes in the router function
 // IMPORTANT: Make sure that the routes in the router function cannot clash, otherwise the first router function that has this route will be rendered
