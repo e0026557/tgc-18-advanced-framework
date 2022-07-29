@@ -3,6 +3,14 @@ const { createUserForm, bootstrapField, createLoginForm } = require('../forms');
 const { checkIfAuthenticated } = require('../middlewares');
 const { User } = require('../models');
 const router = express.Router();
+const crypto = require('crypto');
+
+const getHashedPassword = function(password) {
+  const sha256 = crypto.createHash('sha256');
+  // The output will be converted to hexdecimal
+  const hash = sha256.update(password).digest('base64');
+  return hash;
+}
 
 router.get('/signup', async function (req, res) {
   const userForm = createUserForm();
@@ -25,6 +33,7 @@ router.post('/signup', async function (req, res) {
       // user.set('email', form.data.email);
       // Shortcut
       const { confirm_password, ...userData } = form.data;
+      userData.password = getHashedPassword(userData.password);
       user.set(userData);
 
       await user.save();
@@ -57,7 +66,7 @@ router.post('/login', checkIfAuthenticated, async function (req, res) {
     success: async function (form) {
       const user = await User.where({
         email: form.data.email,
-        password: form.data.password
+        password: getHashedPassword(form.data.password)
       }).fetch({
         require: false // Because we want to handle the case where no user is found by ourselves
       })
