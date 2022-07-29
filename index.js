@@ -33,7 +33,7 @@ app.use(session({
 app.use(flash()); // IMPORTANT: Register Flash after sessions because it uses sessions to work
 
 // Setup middleware to inject session data into the hbs file
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
   // res.locals will contain all the variables available to hbs files
   res.locals.success_messages = req.flash('success_messages'); // req.flash will retrieve and remove the success_messages
   res.locals.error_messages = req.flash('error_messages');
@@ -42,11 +42,13 @@ app.use(function(req, res, next) {
 
 const landingRoutes = require("./routes/landing");
 const productRoutes = require("./routes/products");
+const userRoutes = require('./routes/users');
 
 // First arg is the prefix used to access the routes in the router function
 // IMPORTANT: Make sure that the routes in the router function cannot clash, otherwise the first router function that has this route will be rendered
 app.use("/", landingRoutes);
 app.use("/products", productRoutes);
+app.use('/users', userRoutes);
 
 app.listen(3000, function () {
   console.log("Server has started");
