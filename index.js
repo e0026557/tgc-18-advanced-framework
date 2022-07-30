@@ -25,6 +25,11 @@ app.use(express.static("public"));
 wax.on(hbs.handlebars);
 wax.setLayoutPath("./views/layouts");
 
+// Required for csrf token to work (otherwise keep getting invalid csrf token errors)
+app.use(express.urlencoded({
+  extended: false
+}))
+
 // Setup session
 app.use(session({
   store: new FileStore(), // use file to store sessions
@@ -46,9 +51,7 @@ app.use(function (req, res, next) {
 
 //  Enable CSRF protection
 app.use(csrf());
-app.use(express.urlencoded({
-  extended: false
-}))
+
 
 // Share CSRF with hbs files
 app.use(function(req,res,next){

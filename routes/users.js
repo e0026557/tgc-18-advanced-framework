@@ -1,11 +1,10 @@
 const express = require('express');
 const { createUserForm, bootstrapField, createLoginForm } = require('../forms');
-const { checkIfAuthenticated } = require('../middlewares');
 const { User } = require('../models');
 const router = express.Router();
 const crypto = require('crypto');
 
-const getHashedPassword = function(password) {
+const getHashedPassword = function (password) {
   const sha256 = crypto.createHash('sha256');
   // The output will be converted to hexdecimal
   const hash = sha256.update(password).digest('base64');
@@ -48,7 +47,9 @@ router.post('/signup', async function (req, res) {
       })
     },
     empty: function (form) {
-
+      res.render('users/signup', {
+        form: form.toHTML(bootstrapField)
+      })
     }
   })
 })
@@ -60,9 +61,9 @@ router.get('/login', async function (req, res) {
   })
 })
 
-router.post('/login', checkIfAuthenticated, async function (req, res) {
+router.post('/login', async function (req, res) {
   const loginForm = createLoginForm();
-  loginForm.handle({
+  loginForm.handle(req, {
     success: async function (form) {
       const user = await User.where({
         email: form.data.email,
@@ -84,14 +85,14 @@ router.post('/login', checkIfAuthenticated, async function (req, res) {
           username: user.get('username')
         };
 
-        res.flash('success_messages', `Welcome back, ${user.get('username')}`);
+        req.flash('success_messages', `Welcome back, ${user.get('username')}`);
         res.redirect('/users/profile')
       }
     }
   })
 })
 
-router.get('/profile', checkIfAuthenticated, async function (req, res) {
+router.get('/profile', async function (req, res) {
   const user = req.session.user;
   if (!user) {
     req.flash('error_messages', 'Only logged in users can access this page');
@@ -99,7 +100,7 @@ router.get('/profile', checkIfAuthenticated, async function (req, res) {
   }
   else {
     res.render('users/profile', {
-      user
+      user: req.session.user
     })
   }
 })

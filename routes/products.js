@@ -4,6 +4,7 @@ const router = express.Router();
 // Import in the Product model
 const { Product, Category, Tag } = require('../models'); // Can omit index.js since that is the default file that NodeJS will look for
 const { createProductForm, bootstrapField } = require('../forms');
+const { checkIfAuthenticated } = require('../middlewares');
 
 router.get("/", async function (req, res) {
   // Fetch all the products
@@ -18,7 +19,7 @@ router.get("/", async function (req, res) {
   });
 });
 
-router.get("/create", async function (req, res) {
+router.get("/create", checkIfAuthenticated, async function (req, res) {
   // Fetch all the categories in the system
   // map to an array format for caolan form select dropdown options
   const categories = await Category.fetchAll().map(category => {
@@ -40,7 +41,7 @@ router.get("/create", async function (req, res) {
   })
 });
 
-router.post('/create', async function (req, res) {
+router.post('/create', checkIfAuthenticated, async function (req, res) {
   // Fetch all the categories in the system
   // map to an array format for caolan form select dropdown options
   const categories = await Category.fetchAll().map(category => {
@@ -132,6 +133,7 @@ router.get('/:product_id/update', async function (req, res) {
 })
 
 router.post('/:product_id/update', async function (req, res) {
+  console.log(req.body)
   // 1. Get the product that is being updated
   // -> SELECT * FROM products WHERE product_id = <req.params.product_id> 
   const product = await Product.where({
@@ -147,7 +149,11 @@ router.post('/:product_id/update', async function (req, res) {
     return [category.get('id'), category.get('name')]
   })
 
-  const productForm = createProductForm(categories);
+  const tags = await Tag.fetchAll().map(tag => {
+    return [tag.get('id'), tag.get('name')]
+  })
+
+  const productForm = createProductForm(categories, tags);
 
   // Handle function will run the validation on the data
   productForm.handle(req, {
@@ -183,13 +189,16 @@ router.post('/:product_id/update', async function (req, res) {
       res.redirect('/products');
     },
     error: async function (form) {
-      res.render('/products/update', {
+      res.render('products/update', {
         product: product.toJSON(),
         form: form.toHTML(bootstrapField)
       })
     },
     empty: async function (form) {
-
+      res.render('products/update', {
+        'product': product.toJSON(),
+        'form': form.toHTML(bootstrapField)
+      })
     }
   })
 

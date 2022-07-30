@@ -90,7 +90,7 @@ const createUserForm = function () {
 
 const createLoginForm = function () {
   return forms.create({
-    username: fields.string({
+    email: fields.string({
       required: true,
       errorAfterField: true
     }),
