@@ -9,6 +9,7 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET
 });
 
+// Signed upload ("handshake")
 // This will be called by the cloudinary widget
 router.get('/sign', async function(req, res) {
   const params_to_sign = JSON.parse(req.query.params_to_sign);
@@ -17,6 +18,7 @@ router.get('/sign', async function(req, res) {
   const apiSecret = process.env.CLOUDINARY_API_SECRET;
 
   // Get the signature (CSRF from Cloudinary)
+  // -> also known as checksum (to check that source code has not been tampered before)
   const signature = cloudinary.utils.api_sign_request(params_to_sign, apiSecret);
 
   // Send back signature to cloudinary widget

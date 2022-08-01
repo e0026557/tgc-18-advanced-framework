@@ -60,6 +60,11 @@ app.use(function(req,res,next){
   next();
 })
 
+// Share cloudinary information with hbs file (TODO)
+// app.use(function(req, res, next) {
+//   res.locals.cloudinaryName = 
+// })
+
 const landingRoutes = require("./routes/landing");
 const productRoutes = require("./routes/products");
 const userRoutes = require('./routes/users');

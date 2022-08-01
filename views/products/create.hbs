@@ -18,6 +18,7 @@
 
 {{#block 'js'}}
 
+{{!-- Setting up cloudinary widget --}}
 {{!-- Axios --}}
 <script src="https://cdnjs.cloudflare.com/ajax/libs/axios/0.27.2/axios.min.js"
   integrity="sha512-odNmoc1XJy5x1TMVMdC7EMs3IVdItLPlCeL5vSUPN2llYKMJ2eByTTAIiiuqLg+GdNr9hF6z81p27DArRFKT7A=="
@@ -44,6 +45,7 @@
 {{!-- Display the widget --}}
 <script>
   const myWidget = cloudinary.createUploadWidget({
+    // Get from hbs variables
     cloudName: "{{cloudinaryName}}",
     apiKey: "{{cloudinaryApiKey}}",
     uploadPreset: "{{cloudinaryPreset}}",
@@ -52,7 +54,7 @@
     if (!error && result.event == 'success') {
       console.log(result);
       // caolan form id
-      document.querySelector('#id_image_url').value = result.info.url;
+      document.querySelector('#id_image_url').value = result.info.url; // hidden form field in the hbs file
       document.querySelector('#uploaded_image').src = result.info.url;
       document.querySelector('#uploaded_image').style.display = 'block';
     }

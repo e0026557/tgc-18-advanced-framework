@@ -35,6 +35,7 @@ router.get("/create", checkIfAuthenticated, async function (req, res) {
   res.render('products/create', {
     // Get a HTML version of the form formatted using bootstrap field function
     form: productForm.toHTML(bootstrapField),
+    // Pass cloudinary info to hbs file for use in JS block
     cloudinaryName: process.env.CLOUDINARY_NAME,
     cloudinaryApiKey: process.env.CLOUDINARY_API_KEY,
     cloudinaryPreset: process.env.CLOUDINARY_UPLOAD_PRESET
@@ -119,6 +120,7 @@ router.get('/:product_id/update', async function (req, res) {
   productForm.fields.cost.value = product.get('cost');
   productForm.fields.description.value = product.get('description');
   productForm.fields.category_id.value = product.get('category_id');
+  productForm.fields.image_url.value = product.get('image_url'); // hidden form field
 
   // fill in the multi-select for tags
   // product.related('tags') will return an array of tag objects
@@ -127,8 +129,11 @@ router.get('/:product_id/update', async function (req, res) {
 
   res.render('products/update', {
     'form': productForm.toHTML(bootstrapField),
-    'product': product.toJSON()
-
+    'product': product.toJSON(),
+    // Pass cloudinary info to hbs file for use in JS block
+    'cloudinaryName': process.env.CLOUDINARY_NAME,
+    'cloudinaryApiKey': process.env.CLOUDINARY_API_KEY,
+    'cloudinaryPreset': process.env.CLOUDINARY_UPLOAD_PRESET
   })
 })
 
@@ -164,6 +169,7 @@ router.post('/:product_id/update', async function (req, res) {
       // product.set('cost', form.data.cost)
       // product.set('description', form.data.description)
       // product.set('category_id', form.data.category_id)
+      // product.set('image_url', form.data.image_url)
 
       let { tags, ...productData } = form.data;
       product.set(productData); // for the shortcut to work, all the keys in form.data object must be a column name in the table
