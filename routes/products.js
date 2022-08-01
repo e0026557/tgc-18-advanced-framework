@@ -94,7 +94,7 @@ router.post('/create', checkIfAuthenticated, async function (req, res) {
   })
 })
 
-router.get('/:product_id/update', async function (req, res) {
+router.get('/:product_id/update', checkIfAuthenticated, async function (req, res) {
   // 1. get the product that is being updated
   // select * from products where product_id = <req.params.product_id>
   const product = await Product.where({
@@ -137,7 +137,7 @@ router.get('/:product_id/update', async function (req, res) {
   })
 })
 
-router.post('/:product_id/update', async function (req, res) {
+router.post('/:product_id/update', checkIfAuthenticated, async function (req, res) {
   console.log(req.body)
   // 1. Get the product that is being updated
   // -> SELECT * FROM products WHERE product_id = <req.params.product_id> 
@@ -210,7 +210,7 @@ router.post('/:product_id/update', async function (req, res) {
 
 })
 
-router.get('/:product_id/delete', async function (req, res) {
+router.get('/:product_id/delete', checkIfAuthenticated, async function (req, res) {
   const product = await Product.where({
     'id': req.params.product_id
   }).fetch({
@@ -222,7 +222,7 @@ router.get('/:product_id/delete', async function (req, res) {
   })
 })
 
-router.post('/:product_id/delete', async function (req, res) {
+router.post('/:product_id/delete', checkIfAuthenticated, async function (req, res) {
   const product = await Product.where({
     'id': req.params.product_id
   }).fetch({
