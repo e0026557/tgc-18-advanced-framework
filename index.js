@@ -33,7 +33,7 @@ app.use(express.urlencoded({
 // Setup session
 app.use(session({
   store: new FileStore(), // use file to store sessions
-  secret: 'keyboard cat', // used to generate the session id
+  secret: process.env.SESSION_SECRET, // used to generate the session id
   resave: false, // do we automatically recreate the session even if there is no change to it
   saveUninitialized: true // if a new browser connects do we create a new session
 }))
@@ -53,7 +53,7 @@ app.use(function (req, res, next) {
 app.use(csrf());
 
 // Share CSRF with hbs files (must be included for all forms otherwise invalid CSRF error)
-app.use(function(req,res,next){
+app.use(function (req, res, next) {
   // The csrfToken function is available because of app.use(csrf())
   res.locals.csrfToken = req.csrfToken();
   next();
