@@ -65,6 +65,7 @@ router.post('/create', checkIfAuthenticated, async function (req, res) {
       product.set('cost', form.data.cost)
       product.set('category_id', form.data.category_id)
       product.set('image_url', form.data.image_url)
+      product.set('thumbnail_url', form.data.thumbnail_url)
 
       // MUST REMEMBER TO SAVE (async)
       await product.save();
