@@ -51,7 +51,8 @@
     uploadPreset: "{{cloudinaryPreset}}",
     uploadSignature: generateSignature,
     cropping: true, // allow cropping of image
-    croppingAspectRatio: 1 // decimal value (width/height)
+    croppingAspectRatio: 1, // decimal value (width/height)
+    showSkipCropButton: false // enforce cropping
   }, function(error, result) {
     if (!error && result.event == 'success') {
       console.log(result);
