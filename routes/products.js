@@ -6,6 +6,9 @@ const { Product, Category, Tag } = require('../models'); // Can omit index.js si
 const { createProductForm, createSearchForm, bootstrapField } = require('../forms');
 const { checkIfAuthenticated } = require('../middlewares');
 
+// Import DAL
+const dataLayer = require('../dal/products');
+
 router.get("/", async function (req, res) {
   // Fetch all the products
   // use the bookshelf syntax
@@ -19,17 +22,13 @@ router.get("/", async function (req, res) {
 
   // Fetch all the categories in the system
   // map to an array format for caolan form select dropdown options
-  const categories = await Category.fetchAll().map(category => {
-    return [category.get('id'), category.get('name')]
-  })
+  const categories = await dataLayer.getAllCategories();
 
   // Put at start of array (for search all category option)
   categories.unshift([0, '--- Any category ---']);
 
   // Fetch all tags
-  const tags = await Tag.fetchAll().map(tag => {
-    return [tag.get('id'), tag.get('name')]
-  })
+  const tags = await dataLayer.getAllTags();
 
   // Create a search engine:
   // Create instance of the search form
@@ -108,13 +107,9 @@ router.get("/", async function (req, res) {
 router.get("/create", checkIfAuthenticated, async function (req, res) {
   // Fetch all the categories in the system
   // map to an array format for caolan form select dropdown options
-  const categories = await Category.fetchAll().map(category => {
-    return [category.get('id'), category.get('name')]
-  })
+  const categories = await dataLayer.getAllCategories();
 
-  const tags = await Tag.fetchAll().map(tag => {
-    return [tag.get('id'), tag.get('name')]
-  })
+  const tags = await dataLayer.getAllTags();
 
   // Create an instance of form
   const productForm = createProductForm(categories, tags);
@@ -131,9 +126,7 @@ router.get("/create", checkIfAuthenticated, async function (req, res) {
 router.post('/create', checkIfAuthenticated, async function (req, res) {
   // Fetch all the categories in the system
   // map to an array format for caolan form select dropdown options
-  const categories = await Category.fetchAll().map(category => {
-    return [category.get('id'), category.get('name')]
-  })
+  const categories = await dataLayer.getAllCategories();
 
   const productForm = createProductForm(categories);
   productForm.handle(req, {
@@ -184,22 +177,13 @@ router.post('/create', checkIfAuthenticated, async function (req, res) {
 router.get('/:product_id/update', checkIfAuthenticated, async function (req, res) {
   // 1. get the product that is being updated
   // select * from products where product_id = <req.params.product_id>
-  const product = await Product.where({
-    'id': req.params.product_id
-  }).fetch({
-    withRelated: ['tags'], // fetch all the tags associated with the product
-    require: true  // if not found will cause an exception (aka an error)
-  })
+  const product = await dataLayer.getProductById(req.params.product_id);
   // 2. create the form to update the product
   // Fetch all the categories in the system
   // map to an array format for caolan form select dropdown options
-  const categories = await Category.fetchAll().map(category => {
-    return [category.get('id'), category.get('name')]
-  })
+  const categories = await dataLayer.getAllCategories();
 
-  const tags = await Tag.fetchAll().map(tag => {
-    return [tag.get('id'), tag.get('name')]
-  })
+  const tags = await dataLayer.getAllTags();
 
   const productForm = createProductForm(categories, tags);
   // 3. fill the form with the previous values of the product
@@ -228,23 +212,13 @@ router.post('/:product_id/update', checkIfAuthenticated, async function (req, re
   console.log(req.body)
   // 1. Get the product that is being updated
   // -> SELECT * FROM products WHERE product_id = <req.params.product_id> 
-  const product = await Product.where({
-    'id': req.params.product_id
-  }).fetch({
-    withRelated: ['tags'],
-    require: true // if not found will cause an exception/error (need to surround with try catch in real life)
-  })
+  const product = await dataLayer.getProductById(req.params.product_id);
 
   // Fetch all the categories in the system
   // map to an array format for caolan form select dropdown options
-  const categories = await Category.fetchAll().map(category => {
-    return [category.get('id'), category.get('name')]
-  })
+  const categories = await dataLayer.getAllCategories();
 
-  const tags = await Tag.fetchAll().map(tag => {
-    return [tag.get('id'), tag.get('name')]
-  })
-
+  const tags = await dataLayer.getAllTags();
   const productForm = createProductForm(categories, tags);
 
   // Handle function will run the validation on the data
@@ -298,11 +272,7 @@ router.post('/:product_id/update', checkIfAuthenticated, async function (req, re
 })
 
 router.get('/:product_id/delete', checkIfAuthenticated, async function (req, res) {
-  const product = await Product.where({
-    'id': req.params.product_id
-  }).fetch({
-    require: true
-  })
+  const product = await dataLayer.getProductById(req.params.product_id);
 
   res.render('products/delete', {
     product: product.toJSON()
@@ -310,11 +280,7 @@ router.get('/:product_id/delete', checkIfAuthenticated, async function (req, res
 })
 
 router.post('/:product_id/delete', checkIfAuthenticated, async function (req, res) {
-  const product = await Product.where({
-    'id': req.params.product_id
-  }).fetch({
-    require: true
-  })
+  const product = await dataLayer.getProductById(req.params.product_id);
 
   await product.destroy();
 
