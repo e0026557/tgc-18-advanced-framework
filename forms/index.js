@@ -61,7 +61,11 @@ const createProductForm = (categories, tags) => {
     // <input type='hidden' />
     image_url: fields.string({
       widget: widgets.hidden()
-    })
+    }),
+    // <input type='hidden' />
+    thumbnail_url: fields.string({
+      widget: widgets.hidden()
+    }),
   })
 }
 
