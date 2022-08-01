@@ -3,7 +3,7 @@ const router = express.Router();
 
 // Import in the Product model
 const { Product, Category, Tag } = require('../models'); // Can omit index.js since that is the default file that NodeJS will look for
-const { createProductForm, bootstrapField } = require('../forms');
+const { createProductForm, createSearchForm, bootstrapField } = require('../forms');
 const { checkIfAuthenticated } = require('../middlewares');
 
 router.get("/", async function (req, res) {
@@ -11,12 +11,98 @@ router.get("/", async function (req, res) {
   // use the bookshelf syntax
   // -> select * from products
   // plus joining category tbale
-  let products = await Product.collection().fetch({
-    withRelated: ['category', 'tags']
-  });
-  res.render("products/index", {
-    products: products.toJSON()
-  });
+
+  // Previous code (without search engine)
+  // let products = await Product.collection().fetch({
+  //   withRelated: ['category', 'tags']
+  // });
+
+  // Fetch all the categories in the system
+  // map to an array format for caolan form select dropdown options
+  const categories = await Category.fetchAll().map(category => {
+    return [category.get('id'), category.get('name')]
+  })
+
+  // Put at start of array (for search all category option)
+  categories.unshift([0, '--- Any category ---']);
+
+  // Fetch all tags
+  const tags = await Tag.fetchAll().map(tag => {
+    return [tag.get('id'), tag.get('name')]
+  })
+
+  // Create a search engine:
+  // Create instance of the search form
+  const searchForm = createSearchForm(categories, tags);
+
+  // Create a query builder
+  let query = Product.collection(); // This creates a query builder
+
+  // Search engine logic: (using Knex query builder)
+  searchForm.handle(req, {
+    success: async function (form) {
+      // If user provide query for name
+      if (form.data.name) {
+        query.where('name', 'like', `%${form.data.name}%`);
+      }
+
+      if (form.data.min_cost) {
+        query.where('cost', '>=', form.data.min_cost);
+      }
+
+      if (form.data.max_cost) {
+        query.where('cost', '<=', form.data.max_cost);
+      }
+
+      if (form.data.category_id && form.data.category_id !== '0') {
+        query.where('category_id', '=', form.data.category_id);
+      }
+
+      // Need to perform join to get the tags of each product (pivot table products_tags)
+      if (form.data.tags) {
+        // First arg: SQL clause
+        // second arg: which table
+        // third arg: one of the keys
+        // fourth arg: the key to join with
+        // Eqv: SELECT * FROM products JOIN products_tags ON products.id = products_id where tag_id IN (<selected tags ID>)
+        // NOTE: THIS METHOD SEARCH FOR 'OR' NOT 'AND'
+        // -> DOING 'AND' IS HARD SINCE REQUIRES SUB-QUERIES
+        query.query('join', 'products_tags', 'products.id', 'product_id').where('tag_id', 'in', form.data.tags.split(','))
+      }
+
+      const products = await query.fetch({
+        withRelated: ['category', 'tags']
+      })
+
+      res.render("products/index", {
+        products: products.toJSON(),
+        form: form.toHTML(bootstrapField) // Note that this is form not searchForm so that user can see the query
+      });
+    },
+    empty: async function (form) {
+      const products = await query.fetch({
+        withRelated: ['category', 'tags']
+      })
+
+      res.render("products/index", {
+        products: products.toJSON(),
+        form: searchForm.toHTML(bootstrapField)
+      });
+    },
+    error: async function (form) {
+
+    }
+  })
+
+  // Previous code before search engine
+  // const products = await query.fetch({
+  //   withRelated: ['category', 'tags']
+  // })
+
+  // res.render("products/index", {
+  //   products: products.toJSON(),
+  //   form: searchForm.toHTML(bootstrapField)
+  // });
 });
 
 router.get("/create", checkIfAuthenticated, async function (req, res) {

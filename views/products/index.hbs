@@ -3,6 +3,16 @@
 {{#block 'content'}}
 <h1>Products</h1>
 <a href="products/create" class="btn btn-primary">New</a>
+
+<h2>Search</h2>
+{{!-- GET since we are just retrieving information --}}
+<form method="get">
+  {{{form}}}
+
+  <input type="submit" value="Search" class="btn btn-primary my-3">
+</form>
+
+
 <table class="table">
   <thead>
     <tr>
