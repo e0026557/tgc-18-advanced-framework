@@ -52,8 +52,7 @@ app.use(function (req, res, next) {
 //  Enable CSRF protection
 app.use(csrf());
 
-
-// Share CSRF with hbs files
+// Share CSRF with hbs files (must be included for all forms otherwise invalid CSRF error)
 app.use(function(req,res,next){
   // The csrfToken function is available because of app.use(csrf())
   res.locals.csrfToken = req.csrfToken();
