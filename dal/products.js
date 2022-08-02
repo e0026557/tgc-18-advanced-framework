@@ -25,6 +25,7 @@ async function getProductById(productId) {
     withRelated: ['tags'], // fetch all the tags associated with the product
     require: true  // if not found will cause an exception (aka an error)
   })
+  return product;
 }
 
 module.exports = {

@@ -9,6 +9,7 @@
   <div>
     <a href="#" class="btn btn-primary" id="upload_widget">Upload</a>
     <img src="" style="display:none" id="uploaded_image">
+    <img src="" style="display:none" id="uploaded_thumbnail">
   </div>
   <input type="hidden" name="_csrf" value="{{csrfToken}}" />
   <input type="submit" value="Submit" class="btn btn-primary my-3">
@@ -53,18 +54,21 @@
     cropping: true, // allow cropping of image
     croppingAspectRatio: 1, // decimal value (width/height)
     showSkipCropButton: false // enforce cropping
-  }, function(error, result) {
+  }, function (error, result) {
     if (!error && result.event == 'success') {
       console.log(result);
-      // caolan form id
+      // caolan form id (image)
       document.querySelector('#id_image_url').value = result.info.url; // hidden form field in the hbs file
       document.querySelector('#uploaded_image').src = result.info.url;
       document.querySelector('#uploaded_image').style.display = 'block';
+
+      // caolan form id (thumbnail)
+      document.querySelector('#id_thumbnail_url').value = result.info.thumbnail_url; // hidden form field in the hbs file
     }
   })
 
   // Add event listener to the upload button
-  document.querySelector('#upload_widget').addEventListener('click', function(event) {
+  document.querySelector('#upload_widget').addEventListener('click', function (event) {
     event.preventDefault();
     myWidget.open();
   })
