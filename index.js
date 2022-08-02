@@ -53,12 +53,26 @@ app.use(function (req, res, next) {
 })
 
 //  Enable CSRF protection
-app.use(csrf());
+// app.use(csrf());
+// Proxy middleware 
+const csrfInstance = csrf();
+app.use(function (req, res, next) {
+  // console.log('Checking for csrf exclusion');
+  if (req.url === '/checkout/process_payment') {
+    next();
+  }
+  else {
+    csrfInstance(req, res, next);
+  }
+})
 
 // Share CSRF with hbs files (must be included for all forms otherwise invalid CSRF error)
 app.use(function (req, res, next) {
-  // The csrfToken function is available because of app.use(csrf())
-  res.locals.csrfToken = req.csrfToken();
+  // The csrfToken function is available because of app.use(csrf()) or csrfInstance
+  // Check if req.csrfToken is available
+  if (req.csrfToken) {
+    res.locals.csrfToken = req.csrfToken();
+  }
   next();
 })
 

@@ -2,8 +2,9 @@ const express = require('express');
 const router = express.Router();
 const cartServices = require('../services/carts');
 const Stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+const { checkIfAuthenticated } = require('../middlewares');
 
-router.get('/', async function (req, res) {
+router.get('/', checkIfAuthenticated, async function (req, res) {
   // NOTE: CANNOT RECEIVE/STORE USER'S CREDIT CARD INFORMATION -> go through stripe instead via payment session
 
   // Step 1: Create the line items
@@ -46,7 +47,8 @@ router.get('/', async function (req, res) {
     cancel_url: process.env.STRIPE_CANCEL_URL,
     // in the metadata, the keys are up to us but the values MUST be a string
     metadata: {
-      orders: metaData
+      orders: metaData,
+      user_id: req.session.user.id
     }
   }
 
@@ -60,12 +62,44 @@ router.get('/', async function (req, res) {
   })
 });
 
-router.get('/success', function (req, res) {
+router.get('/success', checkIfAuthenticated, function (req, res) {
   res.send('payment success');
 })
 
-router.get('/cancel', function (req, res) {
+router.get('/cancel', checkIfAuthenticated, function (req, res) {
   res.send('payment cancelled');
+})
+
+// WEBHOOK FOR STRIPE
+// Note: must exclude csrf for this part
+// IMPORTANT: POST -> we are changing our database on based on payment info and this is also what Stripe decided
+// IMPORTANT: REQUIRE MIDDLEWARE OTHERWISE WON'T WORK
+router.post('/process_payment', express.raw({
+  type: 'application/json'
+}), async function (req, res) {
+  let payload = req.body; // payment information is inside req.body
+  let endpointSecret = process.env.STRIPE_ENDPOINT_SECRET; // each webhook will have one endpoint secret (ensure that Stripe is the one that is sending the information to us and not someone else)
+
+  let sigHeader = req.headers['stripe-signature']; // when stripe sends us the information, there will be a signature and the key will be 'stripe-signature'
+  let event = null;
+
+  // try to extract out the information and ensures that it is legit (actually comes from Stripe)
+  try {
+    event = Stripe.webhooks.constructEvent(payload, sigHeader, endpointSecret);
+
+    if (event.type == 'checkout.session.completed') {
+      console.log(event.data.object);
+      const metadata = JSON.parse(event.data.object.metadata.orders);
+      console.log(metadata);
+      res.send({
+        success: true
+      });
+    } // checkout.session.completed -> payment is done
+  }
+  catch (err) {
+    console.log(err);
+    res.sendStatus(500);
+  }
 })
 
 module.exports = router;
