@@ -42,8 +42,8 @@ router.get('/', async function (req, res) {
   const payment = {
     payment_method_types: ['card'],
     line_items: lineItems,
-    success_url: 'http://www.google.com', // url to direct to after successful payment
-    cancel_url: 'http://www.yahoo.com',
+    success_url: process.env.STRIPE_SUCCESS_URL + '?sessionId={CHECKOUT_SESSION_ID}', // url to direct to after successful payment
+    cancel_url: process.env.STRIPE_CANCEL_URL,
     // in the metadata, the keys are up to us but the values MUST be a string
     metadata: {
       orders: metaData
@@ -59,5 +59,13 @@ router.get('/', async function (req, res) {
     publishableKey: process.env.STRIPE_PUBLISHABLE_KEY
   })
 });
+
+router.get('/success', function (req, res) {
+  res.send('payment success');
+})
+
+router.get('/cancel', function (req, res) {
+  res.send('payment cancelled');
+})
 
 module.exports = router;

@@ -12,6 +12,8 @@ const csrf = require('csurf');
 // Enable env files
 require('dotenv').config();
 
+const { getCart } = require('./dal/carts')
+
 // Create a new session filestore
 const FileStore = require('session-file-store')(session);
 
@@ -57,6 +59,22 @@ app.use(csrf());
 app.use(function (req, res, next) {
   // The csrfToken function is available because of app.use(csrf())
   res.locals.csrfToken = req.csrfToken();
+  next();
+})
+
+// Share user data across all hbs files
+app.use(function (req, res, next) {
+  res.locals.user = req.session.user;
+  next();
+})
+
+// Share shopping cart data across all hbs files
+app.use(async function (req, res, next) {
+  // Check if user has logged in or else no shopping cart to show
+  if (req.session.user) {
+    const cartItems = await getCart(req.session.user.id); // Note: not supposed to use DAL for this
+    res.locals.cartCount = cartItems.toJSON().length;
+  }
   next();
 })
 
