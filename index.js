@@ -8,6 +8,7 @@ const session = require('express-session');
 const flash = require('connect-flash');
 const csrf = require('csurf');
 
+
 // Enable env files
 require('dotenv').config();
 
@@ -68,6 +69,9 @@ const landingRoutes = require("./routes/landing");
 const productRoutes = require("./routes/products");
 const userRoutes = require('./routes/users');
 const cloudinaryRoutes = require('./routes/cloudinary');
+const cartRoutes = require('./routes/carts');
+const checkoutRoutes = require('./routes/checkout');
+const { checkIfAuthenticated } = require("./middlewares");
 
 // First arg is the prefix used to access the routes in the router function
 // IMPORTANT: Make sure that the routes in the router function cannot clash, otherwise the first router function that has this route will be rendered
@@ -75,6 +79,8 @@ app.use("/", landingRoutes);
 app.use("/products", productRoutes);
 app.use('/users', userRoutes);
 app.use('/cloudinary', cloudinaryRoutes);
+app.use('/cart', checkIfAuthenticated, cartRoutes); // Apply middleware checkIfAuthenticated to all routes in cartRoutes
+app.use('/checkout', checkoutRoutes);
 
 app.listen(3000, function () {
   console.log("Server has started");

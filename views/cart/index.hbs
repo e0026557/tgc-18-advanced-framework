@@ -1,0 +1,30 @@
+{{#extends 'base'}}
+
+{{#block 'content'}}
+
+<h1>Your cart</h1>
+<a href="/checkout" class="btn btn-primary my-3">Checkout</a>
+
+<ul class="list-group">
+  {{#each cartItems}}
+  <li class="list-group-item">
+    {{!-- To access column of related table products --}}
+    <h4>{{this.product.name}}</h4>
+    <h5>Category {{this.product.category.name}}</h5>
+    <h5>Cost: {{this.product.cost}}</h5>
+    <h5>
+      {{!-- Need to post the form to another route --}}
+      <form action="/cart/{{this.product_id}}/update" method="post">
+        <input type="hidden" name="_csrf" value="{{../csrfToken}}">
+        Quantity: <input type="text" name="newQuantity" value="{{this.quantity}}" style="width: 30px">
+        <input type="submit" value="Update" class="btn btn-primary btn-sm">
+      </form>
+    </h5>
+    <a href="/cart/{{this.product_id}}/delete" class="btn btn-danger btn-sm">Delete</a>
+  </li>
+  {{/each}}
+</ul>
+
+{{/block}}
+
+{{/extends}}
