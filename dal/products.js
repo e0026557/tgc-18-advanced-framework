@@ -28,8 +28,15 @@ async function getProductById(productId) {
   return product;
 }
 
+async function getAllProducts() {
+  return await Product.fetchAll({
+    withRelated: ['tags', 'category']
+  });
+}
+
 module.exports = {
   getAllCategories,
   getAllTags,
-  getProductById
+  getProductById,
+  getAllProducts
 };

@@ -4,6 +4,7 @@
 const express = require("express");
 const hbs = require("hbs");
 const wax = require("wax-on");
+const cors = require('cors');
 const session = require('express-session');
 const flash = require('connect-flash');
 const csrf = require('csurf');
@@ -20,6 +21,9 @@ const FileStore = require('session-file-store')(session);
 const app = express();
 
 app.set("view engine", "hbs");
+
+// Enable cross-site origin resource sharing (CORS)
+app.use(cors());
 
 // Static folder
 app.use(express.static("public"));
@@ -105,6 +109,10 @@ const cartRoutes = require('./routes/carts');
 const checkoutRoutes = require('./routes/checkout');
 const { checkIfAuthenticated } = require("./middlewares");
 
+const api = {
+  products: require('./routes/api/products')
+}
+
 // First arg is the prefix used to access the routes in the router function
 // IMPORTANT: Make sure that the routes in the router function cannot clash, otherwise the first router function that has this route will be rendered
 app.use("/", landingRoutes);
@@ -113,6 +121,9 @@ app.use('/users', userRoutes);
 app.use('/cloudinary', cloudinaryRoutes);
 app.use('/cart', checkIfAuthenticated, cartRoutes); // Apply middleware checkIfAuthenticated to all routes in cartRoutes
 app.use('/checkout', checkoutRoutes);
+
+// Register api routes
+app.use('/api/products', api.products);
 
 app.listen(3000, function () {
   console.log("Server has started");
