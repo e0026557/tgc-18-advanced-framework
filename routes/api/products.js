@@ -37,11 +37,11 @@ router.post('/', async function (req, res) {
           errors[key] = form.fields[key].error;
         }
       }
-      res.status = 400;
+      res.status(400);
       res.json(errors);
     },
     empty: async function (form) {
-      res.status = 400;
+      res.status(400);
       res.json({
         error: 'No data provided'
       });

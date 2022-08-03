@@ -110,7 +110,8 @@ const checkoutRoutes = require('./routes/checkout');
 const { checkIfAuthenticated } = require("./middlewares");
 
 const api = {
-  products: require('./routes/api/products')
+  products: require('./routes/api/products'),
+  users: require('./routes/api/users')
 }
 
 // First arg is the prefix used to access the routes in the router function
@@ -125,6 +126,7 @@ app.use('/checkout', checkoutRoutes);
 // Register api routes
 // -> need to use json middleware
 app.use('/api/products', express.json(), api.products);
+app.use('/api/users', express.json(), api.users);
 
 app.listen(3000, function () {
   console.log("Server has started");
