@@ -9,7 +9,6 @@ const session = require('express-session');
 const flash = require('connect-flash');
 const csrf = require('csurf');
 
-
 // Enable env files
 require('dotenv').config();
 
@@ -17,6 +16,8 @@ const { getCart } = require('./dal/carts')
 
 // Create a new session filestore
 const FileStore = require('session-file-store')(session);
+
+const PORT = process.env.PORT || 3000;
 
 const app = express();
 
@@ -128,6 +129,6 @@ app.use('/checkout', checkoutRoutes);
 app.use('/api/products', express.json(), api.products);
 app.use('/api/users', express.json(), api.users);
 
-app.listen(3000, function () {
+app.listen(PORT, function () {
   console.log("Server has started");
 });

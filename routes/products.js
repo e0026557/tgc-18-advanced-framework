@@ -42,7 +42,12 @@ router.get("/", async function (req, res) {
     success: async function (form) {
       // If user provide query for name
       if (form.data.name) {
-        query.where('name', 'like', `%${form.data.name}%`);
+        if (process.env.DB_DRIVER === 'mysql') {
+          query.where('name', 'like', `%${form.data.name}%`);
+        }
+        else {
+          query.where('name', 'ilike', `%${form.data.name}%`);
+        }
       }
 
       if (form.data.min_cost) {
