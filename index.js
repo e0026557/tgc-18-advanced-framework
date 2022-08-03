@@ -62,7 +62,7 @@ app.use(function (req, res, next) {
 const csrfInstance = csrf();
 app.use(function (req, res, next) {
   // console.log('Checking for csrf exclusion');
-  if (req.url === '/checkout/process_payment') {
+  if (req.url === '/checkout/process_payment' || req.url.slice(0, 5) == '/api/') {
     next();
   }
   else {
@@ -123,7 +123,8 @@ app.use('/cart', checkIfAuthenticated, cartRoutes); // Apply middleware checkIfA
 app.use('/checkout', checkoutRoutes);
 
 // Register api routes
-app.use('/api/products', api.products);
+// -> need to use json middleware
+app.use('/api/products', express.json(), api.products);
 
 app.listen(3000, function () {
   console.log("Server has started");
