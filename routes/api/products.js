@@ -3,7 +3,6 @@ const router = express.Router();
 const { createProductForm } = require('../../forms');
 
 const productDataLayer = require('../../dal/products');
-const { route } = require('../landing');
 const { Product } = require('../../models');
 
 router.get('/', async function (req, res) {
